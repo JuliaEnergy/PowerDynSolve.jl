@@ -14,10 +14,9 @@ env:
   global:
     - PYTHON=conda # necessary for SymPy
   matrix:
-    include:
-      - USE_POWER_DYN_MASTER=true
-  allow_failures:
-      - USE_POWER_DYN_MASTER=false
+   - USE_POWER_DYN_MASTER=true
+#  allow_failures:
+#      - USE_POWER_DYN_MASTER=false
 
 # uncomment the following lines to allow failures on nightly julia
 # (tests will run but not make your overall status red)
