@@ -15,6 +15,8 @@ env:
     - PYTHON=conda # necessary for SymPy
   matrix:
     - USE_POWER_DYN_MASTER=true
+    - USE_POWER_DYN_MASTER=false
+matrix:
   allow_failures:
     - USE_POWER_DYN_MASTER=false
 
