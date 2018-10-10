@@ -13,13 +13,9 @@ git:
 env:
   global:
     - PYTHON=conda # necessary for SymPy
-
-matrix:
-  include:
-    - name: 'using registry'
-      env: USE_POWER_DYN_MASTER=false
-    - name: 'using PowerDynamics subpackage master branch'
-      env: USE_POWER_DYN_MASTER=true
+  matrix:
+    - USE_POWER_DYN_MASTER=false
+    - USE_POWER_DYN_MASTER=true
 
 # uncomment the following lines to allow failures on nightly julia
 # (tests will run but not make your overall status red)
