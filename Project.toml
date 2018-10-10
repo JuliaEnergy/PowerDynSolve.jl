@@ -14,9 +14,9 @@ PowerDynBase = "7a7a2b06-a220-11e8-075f-5fa810722f34"
 RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 
 [compat]
-DifferentialEquations = "5"
-Julia = "1.0"
-PowerDynBase = "^0.1"
+DifferentialEquations = "^5"
+Julia = "^1.0"
+PowerDynBase = "^0"
 
 [extras]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
