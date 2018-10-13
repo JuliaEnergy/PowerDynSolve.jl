@@ -3,4 +3,6 @@
 
 # PowerDynSolve.jl
 
-[The documentation can be found here. (Link to be updated)](/)
+Subpackage of [PowerDynamics.jl](https://github.com/JuliaEnergy/PowerDynamics.jl) providing the functionality to solve/simulate the built models
+
+[The documentation can be found here.](https://juliaenergy.github.io/PowerDynamics.jl/latest/)
