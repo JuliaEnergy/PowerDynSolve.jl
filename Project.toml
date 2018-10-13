@@ -1,5 +1,4 @@
 name = "PowerDynSolve"
-uuid = "104c02b2-a50f-11e8-0c2b-43459bde1ede"
 authors = ["Tim Kittel <tim.kittel@elena-international.com>"]
 version = "0.2.0"
 
