@@ -6,9 +6,41 @@ using DiffEqBase: AbstractTimeseriesSolution
 using PowerDynBase
 import PowerDynBase: GridDynamics, internalindex
 
-
+"Abstract super type for all data structures representing solutions of power grid models."
 abstract type AbstractGridSolution end
 
+"""
+    struct GridSolution <: AbstractGridSolution
+        dqsol::AbstractTimeseriesSolution
+        griddynamics::GridDynamics
+    end
+
+The data structure interfacing to the solution of the differntial equations of a power grid.
+Normally, it is not created by hand but return from `PowerDynSolve.solve`.
+
+# Accessing the solution in a similar interface as [`PowerDynBase.State`](@ref).
+
+For some grid solution `sol`, one can access the variables as
+```julia
+sol(t, n, s)
+```
+where `t` is the time (either float or array),
+`n` the node number(s) (either integer, array, range (e.g. 2:3) or colon (:, for all nodes)),
+and `s` is the symbol represnting the chosen value.
+`s` can be either: `:v`, `:φ`, `:i`, `:iabs`, `:δ`, `:s`, `:p`, `:q`, or the symbol of the internal variable of the nodes.
+The meaning of the symbols derives from the conventions of PowerDynamics.jl.
+
+Finally, one can access the `a`-th internal variable of a node by using `sol(t, n, :int, a)`.
+
+# Interfacing the Plots.jl library via plotting recipes, that follow similar instructions as the direct access to the solution.
+
+For some grid solution `sol`, one plot variables of the solution asin
+```julia
+using Plots
+plot(sol, n, s, plots_kwargs...)
+```
+where `n` and `s` are as in the accessing of plots, and `plots_kwargs` are the keyword arguments for Plots.jl.
+"""
 struct GridSolution <: AbstractGridSolution
     dqsol::AbstractTimeseriesSolution
     griddynamics::GridDynamics
@@ -51,10 +83,12 @@ end
 # define the plotting recipes
 using RecipesBase
 
+"Create the standard variable labels for power grid plots."
 tslabel(sym, node) = "$(sym)$(node)"
 tslabel(sym, n::AbstractArray) = tslabel.(Ref(sym), n)
 tslabel(sym, node, i) = "$(sym)$(node)_$(i)"
 tslabel(sym, n::AbstractArray, i) = tslabel.(Ref(sym), n, Ref(i))
+"Transform the array output from DifferentialEquations.jl correctly to be used in Plots.jl's recipes."
 tstransform(arr::AbstractArray{T, 1}) where T = arr
 tstransform(arr::AbstractArray{T, 2}) where T = arr'
 

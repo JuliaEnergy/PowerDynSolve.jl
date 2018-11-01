@@ -3,6 +3,7 @@
 
 using PowerDynBase: PowerDynamicsError
 
+"Error to be thrown if something goes wrong during when solving a power grid model."
 struct GridSolutionError <: PowerDynamicsError
     msg::String
 end
