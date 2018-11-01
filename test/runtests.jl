@@ -1,11 +1,13 @@
 using Test
 
-@time @testset "RootFunction" begin include("rootfunction.jl") end
+testlist = [
+    ("rootfunction.jl", "Root Function Tests"),
+    ("operationpoint.jl", "Operation Point Tests"),
+    ("intergration.jl", "Integration Tests"),
+    ("gridsolutions.jl", "Grid Solutions Tests"),
+    ("plotrecipes.jl", "Plot Recipes Tests"),
+]
 
-@time @testset "Operation Point" begin include("operationpoint.jl") end
-
-@time @testset "Integration" begin include("intergration.jl") end
-
-@time @testset "Grid Solutions" begin include("gridsolutions.jl") end
-
-@time @testset "Plot Recipes" begin include("plotrecipes.jl") end
+@testset "$desc" for (file, desc) in testlist
+    @time include(file)
+end
