@@ -52,10 +52,9 @@ jobs:
         - julia docs/make.jl
     - name: "Changelog Check"
       before_install: true
-      install: true
       before_script: true
       script:
         # show all changed files for debugging
-        - git diff HEAD HEAD~1 --name-only
+        - git diff HEAD master --name-only
         # check if CHANGELOG.md has been modified
-        - git diff HEAD HEAD~1 --name-only | grep ^CHANGELOG.md$
+        - git diff HEAD master --name-only | grep ^CHANGELOG.md$
