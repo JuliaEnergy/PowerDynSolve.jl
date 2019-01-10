@@ -54,6 +54,7 @@ jobs:
       before_install:
       before_script:
       script:
+        - git remote -v
         # show all changed files for debugging
         - git diff HEAD origin/master --name-only
         # check if CHANGELOG.md has been modified
