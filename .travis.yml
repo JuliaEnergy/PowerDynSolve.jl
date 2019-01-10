@@ -50,3 +50,9 @@ jobs:
     - name: "Documentation Test"
       script:
         - julia docs/make.jl
+    - name: "Changelog Check"
+      script:
+        - git diff HEAD HEAD~1 --name-only
+        - git diff HEAD HEAD~1 --name-only | grep ^.travis.yml$
+        # check if CHANGELOG.md has been modified
+        - git diff HEAD HEAD~1 --name-only | grep ^CHANGELOG.md$
