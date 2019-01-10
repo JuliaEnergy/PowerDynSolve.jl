@@ -54,10 +54,10 @@ jobs:
       before_install:
       before_script:
       script:
-        - git remote -v
+        # - git remote -v
         - git fetch origin master
-        - git show-ref
-        - git branch -a
+        # - git show-ref
+        # - git branch -a
         # show all changed files for debugging
         - git diff HEAD master --name-only
         # check if CHANGELOG.md has been modified
