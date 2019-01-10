@@ -52,7 +52,6 @@ jobs:
         - julia docs/make.jl
     - name: "Changelog Check"
       before_install:
-      install:
       before_script:
       script:
         # show all changed files for debugging
