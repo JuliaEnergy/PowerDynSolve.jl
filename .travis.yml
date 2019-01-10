@@ -57,6 +57,6 @@ jobs:
         - git remote -v
         - git fetch origin master
         # show all changed files for debugging
-        - git diff HEAD origin/master --name-only
+        - git diff HEAD master --name-only
         # check if CHANGELOG.md has been modified
-        - git diff HEAD origin/master --name-only | grep ^CHANGELOG.md$
+        - git diff HEAD master --name-only | grep ^CHANGELOG.md$
