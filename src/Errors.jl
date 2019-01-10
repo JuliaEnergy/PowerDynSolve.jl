@@ -3,6 +3,11 @@
 
 using PowerDynBase: PowerDynamicsError
 
+"Error to be thrown if something goes wrong during the operation point search."
+struct OperationPointError <: PowerDynamicsError
+    msg::String
+end
+
 "Error to be thrown if something goes wrong during when solving a power grid model."
 struct GridSolutionError <: PowerDynamicsError
     msg::String
