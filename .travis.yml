@@ -55,7 +55,7 @@ jobs:
       before_script:
       script:
         # - git remote -v
-        - git fetch origin master
+        - git fetch origin master:master
         - git show-ref
         - git branch -a
         # show all changed files for debugging
