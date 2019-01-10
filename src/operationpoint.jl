@@ -1,7 +1,7 @@
 # (C) 2018 Potsdam Institute for Climate Impact Research, authors and contributors (see AUTHORS file)
 # Licensed under GNU GPL v3 (see LICENSE file)
 
-using PowerDynBase: AbstractState, GridDynamics, State, GridDynamics
+using PowerDynBase: AbstractState, GridDynamics, State
 using NLsolve
 
 """
@@ -58,7 +58,7 @@ function operationpoint(start::AbstractState{G, V, T}) where {G, V, T}
     initp = convert(AbstractVector{V}, start)
     res = nlsolve(rootfct, initp)
     if ~res.f_converged
-        @warn "no operation point found, solver did not converge"
+        throw(OperationPointError("solver did not converge"))
     end
     State(grid, res.zero)
 end
