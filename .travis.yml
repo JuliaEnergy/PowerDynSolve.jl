@@ -38,9 +38,15 @@ before_script:
   - julia -e 'using Pkg; Pkg.add(PackageSpec(name="Documenter", version="0.19"))'
 
 # uncomment the following lines to override the default test script
-script:
- - julia --check-bounds=yes --color=yes --inline=no -e "using Pkg; Pkg.test(coverage=true)"
- - julia docs/make.jl
-after_success:
-  # push coverage results to Codecov
-  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+jobs:
+  include:
+    - stage: "Tests"
+      name: "Unit/Integration Tests"
+      script:
+        - julia --check-bounds=yes --color=yes --inline=no -e "using Pkg; Pkg.test(coverage=true)"
+      after_success:
+        # push coverage results to Codecov
+        - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+      name: "Documentation Test"
+      script:
+        - julia docs/make.jl
