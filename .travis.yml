@@ -47,6 +47,6 @@ jobs:
       after_success:
         # push coverage results to Codecov
         - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
-      name: "Documentation Test"
+    - name: "Documentation Test"
       script:
         - julia docs/make.jl
