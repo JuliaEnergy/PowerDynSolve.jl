@@ -53,6 +53,9 @@ jobs:
     - name: "Changelog Check"
       before_install:
       before_script:
+      branches:
+        except:
+          - master
       script:
         - git fetch origin master:master
         # show all changed files for debugging
