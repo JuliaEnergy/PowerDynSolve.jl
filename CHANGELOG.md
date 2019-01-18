@@ -1,5 +1,9 @@
 # PowerDynSolve.jl Changelog
 
+## Version 0.5
+
+* ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) & ![enhancement](https://img.shields.io/badge/PD-enhancement-%23a2eeef.svg) [fix line coverage and testing output](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/20)
+
 ## Version 0.4
 
 * ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) & ![enhancement](https://img.shields.io/badge/PD-enhancement-%23a2eeef.svg) [add Julia 1.1. to travis/ci and fixed wrong coverage reporting (thus)](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/18)
