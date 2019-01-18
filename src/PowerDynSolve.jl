@@ -18,7 +18,6 @@ include("GridProblems.jl")
 include("GridSolutions.jl")
 
 # methods
-include("operationpoint.jl")
 include("solve.jl")
 
 export solve, operationpoint, GridProblem, tspan, TimeSeries

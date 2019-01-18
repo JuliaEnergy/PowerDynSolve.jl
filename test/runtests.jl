@@ -1,8 +1,7 @@
 using Test
+using Crayons
 
 testlist = [
-    ("rootfunction.jl", "Root Function Tests"),
-    ("operationpoint.jl", "Operation Point Tests"),
     ("intergration.jl", "Integration Tests"),
     ("gridsolutions.jl", "Grid Solutions Tests"),
     ("plotrecipes.jl", "Plot Recipes Tests"),
@@ -11,3 +10,10 @@ testlist = [
 @testset "$desc" for (file, desc) in testlist
     @time include(file)
 end
+
+# @testset "All Tests" begin
+#     @testset "$desc" for (file, desc) in testlist
+#         t = @elapsed include(file)
+#         println(Crayon(foreground = :green, bold = true), "$desc:", Crayon(reset = true), " $t s")
+#     end
+# end
