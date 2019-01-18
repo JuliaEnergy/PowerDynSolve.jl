@@ -1,5 +1,6 @@
 begin
     using PowerDynBase
+    using PowerDynOperationPoint
     using PowerDynSolve
     using Random
     using Test
@@ -29,7 +30,7 @@ parnodes = [SlackAlgebraic(U=1.), SwingEqLVS(H=1., P=-1, D=1, Ω=50, Γ=20, V=1)
 LY = [1.0im -im; -im im]
 grid = GridDynamics(parnodes, LY)
 start = State(grid, rand(NetworkRHS(grid) |> SystemSize))
-fp = operationpoint(start)
+fp = getOperationPoint(start)
 @test abs(fp[2, :int, 1]) < 1e-8 # there should be no frequency deviation at the fixed-point
 start = copy(fp)
 start[2, :int, 1] = 0.1 # small frequency perturbation
