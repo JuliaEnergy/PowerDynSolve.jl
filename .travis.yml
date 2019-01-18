@@ -12,7 +12,6 @@ git:
   depth: 99999999
 env:
   global:
-    - JULIA_COVERAGE_VERSION='1.1'
     - PYTHON=conda
     - RED='\033[0;31m'
     - GREEN='\033[0;32m'
@@ -20,12 +19,12 @@ env:
     - BOLD=$(tput bold)
 
 script:
-  - if [ $JULIA_COVERAGE_VERSION == $TRAVIS_JULIA_VERSION ]; then export PUSH_COVERAGE=true; else export PUSH_COVERAGE=false; fi
-    && echo -e "${GREEN}${BOLD}PUSH_COVERAGE=$PUSH_COVERAGE"
-    && julia --check-bounds=yes --color=yes --inline=no -e "using Pkg; Pkg.test(coverage=true)"
-    && julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; res=Codecov.process_folder();
-          if ENV["PUSH_COVERAGE"] == "true" Codecov.submit(res) end;
-          covered_lines, total_lines =  get_summary(res); println("covered_lines/total_lines = $covered_lines/$total_lines = $(covered_lines/total_lines)");'
+  - julia --check-bounds=yes --color=yes --inline=no -e "using Pkg; Pkg.test(coverage=true)"
+    && julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage;
+          res=Codecov.process_folder();
+          Codecov.submit(res);
+          covered_lines, total_lines =  get_summary(res);
+          println("covered_lines/total_lines = $covered_lines/$total_lines = $(covered_lines/total_lines)");'
   - julia -e 'using Pkg; Pkg.add(PackageSpec(name="Documenter", version="0.19"))'
     && julia docs/make.jl
 
