@@ -9,8 +9,10 @@ import PowerDynBase: GridDynamics, internalindex
 "Abstract super type for all data structures representing solutions of power grid models."
 abstract type AbstractGridSolution end
 
+abstract type AbstractSingleGridSolutions <: AbstractGridSolution end
+
 """
-    struct GridSolution <: AbstractGridSolution
+    struct GridSolution <: AbstractSingleGridSolutions
         dqsol::AbstractTimeseriesSolution
         griddynamics::GridDynamics
     end
@@ -41,7 +43,7 @@ plot(sol, n, s, plots_kwargs...)
 ```
 where `n` and `s` are as in the accessing of plots, and `plots_kwargs` are the keyword arguments for Plots.jl.
 """
-struct GridSolution <: AbstractGridSolution
+struct GridSolution <: AbstractSingleGridSolutions
     dqsol::AbstractTimeseriesSolution
     griddynamics::GridDynamics
     function GridSolution(dqsol::AbstractTimeseriesSolution, griddynamics::GridDynamics)
@@ -79,7 +81,6 @@ end
 (sol::GridSolution)(t, n, ::Type{Val{:int}}, i) = @>> TimeSeries(sol)(t, idxs=internalindex(sol, n, i)) convert(Array)
 (sol::GridSolution)(t, n, ::Type{Val{sym}}) where sym = sol(t, n, Val{:int}, sym)
 
-
 # define the plotting recipes
 using RecipesBase
 
@@ -94,10 +95,14 @@ tstransform(arr::AbstractArray{T, 2}) where T = arr'
 
 const PLOT_TTIME_RESOLUTION = 10_000
 
-@recipe function f(sol::GridSolution, ::Colon, sym::Symbol, args...)
-    sol, eachindex(Nodes(sol)), sym, args...
+@recipe function f(sol::AbstractGridSolution, ::Colon, args...)
+    sol, eachindex(Nodes(sol)), args...
 end
-@recipe function f(sol::GridSolution, n, sym::Symbol, args...; tres = PLOT_TTIME_RESOLUTION)
+@recipe function f(sol::AbstractGridSolution, n, syms::Tuple, args...)
+    map(sym -> (sol, n, sym, args...), syms)
+end
+
+@recipe function f(sol::AbstractGridSolution, n, sym::Symbol, args...; tres = PLOT_TTIME_RESOLUTION)
     if sym == :int
         label --> tslabel(sym, n, args[1])
     else
