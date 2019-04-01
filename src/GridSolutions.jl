@@ -11,6 +11,8 @@ abstract type AbstractGridSolution end
 
 abstract type AbstractSingleGridSolutions <: AbstractGridSolution end
 
+ # to ensure broadcasting can be used
+ @inline Broadcast.broadcastable(sol::AbstractSingleGridSolutions) = Ref(sol)
 """
     struct GridSolution <: AbstractSingleGridSolutions
         dqsol::AbstractTimeseriesSolution
@@ -58,12 +60,28 @@ TimeSeries(sol::GridSolution) = sol.dqsol
 tspan(sol::GridSolution) = (TimeSeries(sol).t[1], TimeSeries(sol).t[end])
 tspan(sol::GridSolution, tres) = range(TimeSeries(sol).t[1], stop=TimeSeries(sol).t[end], length=tres)
 
-(sol::GridSolution)(t, ::Colon, sym::Symbol, args...) = sol(t, eachindex(Nodes(sol)), sym, args...)
-(sol::GridSolution)(t, n, sym::Symbol, args...) = begin
-    if ~all( 1 .<= n .<= length(Nodes(sol))  )
+function reportMissing(missingIfNotFound::Bool, sol::GridSolution, n::Number)::Missing
+    if missingIfNotFound
+        return missing
+    else
         throw(BoundsError(sol, n))
     end
-    sol(t, n, Val{sym}, args...)
+end
+
+(sol::GridSolution)(t, ::Colon, sym::Symbol, args...; kwargs...) =
+    sol(t, eachindex(Nodes(sol)), sym, args...; kwargs...)
+(sol::GridSolution)(t, n, sym::Symbol, args...; missingIfNotFound::Bool=false) = begin
+    if ~all( 1 .<= n .<= length(Nodes(sol)) )
+        @show missingIfNotFound n
+        reportMissing.(missingIfNotFound, sol, n)
+    else
+        sol(t, n, Val{sym}, args...)
+    end
+end
+(sol::GridSolution)(t::Number, n::Number, ::Type{Val{:u}}) = begin
+    u_real = TimeSeries(sol)(t, idxs= 2 * n - 1)
+    u_imag = TimeSeries(sol)(t, idxs= 2 * n)
+    u_real + im * u_imag
 end
 (sol::GridSolution)(t, n, ::Type{Val{:u}}) = begin
     u_real = @>> TimeSeries(sol)(t, idxs= 2 .* n .- 1) convert(Array)
@@ -79,6 +97,7 @@ end
 (sol::GridSolution)(t, n, ::Type{Val{:p}}) = sol(t, n, :s) .|> real
 (sol::GridSolution)(t, n, ::Type{Val{:q}}) = sol(t, n, :s) .|> imag
 (sol::GridSolution)(t, n, ::Type{Val{:int}}, i) = @>> TimeSeries(sol)(t, idxs=internalindex(sol, n, i)) convert(Array)
+(sol::GridSolution)(t::Number, n::Number, ::Type{Val{:int}}, i::S) where {S <: Union{Number,Symbol}} = TimeSeries(sol)(t, idxs=internalindex(sol, n, i))
 (sol::GridSolution)(t, n, ::Type{Val{sym}}) where sym = sol(t, n, Val{:int}, sym)
 
 # define the plotting recipes
