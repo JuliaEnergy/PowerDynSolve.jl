@@ -115,15 +115,6 @@ for t in [ts, 0.1], n in [1:2, :, 1, 2]
     @test sol(t, n, :int, 1) == sol(t, n, :ω)
 end
 @test_nowarn sol(ts, :, :int, [1, 1]) # access the frequencies
-# TODO: test missing
-@assert false # continue here ... probably bring everything on the single value level
-sol(ts, 3, :u, missingIfNotFound=true)
-for (t, n, syms) in [(ts, )]   [ts, 0.1], n in [1:2, :, 1, 2]
-    for syms=[(:u,), (:p,), (:v,), (:int, 1), (:ω,) ]
-        @test_nowarn sol(t, n, syms...)
-    end
-    @test sol(t, n, :int, 1) == sol(t, n, :ω)
-end
 end
 
 # CompositeGridSolution of 2 GridSolution
@@ -174,9 +165,4 @@ csol = CompositeGridSolution(sol1, sol2)
 @test csol(11, 1, :u, missingIfNotFound=true) .=== missing
 
 @test_throws BoundsError csol(tArray1, 3, :u)
-@test all( csol(tArray1, 3, :u, missingIfNotFound=true) .=== Array{Missing}(missing, 100) )
-
-@test all( csol(10:11, 1, :u, missingIfNotFound=true) .=== [csol(10, 1, :u), missing] )
-@test all( csol(10, 2:3, :u, missingIfNotFound=true) .=== [csol(10, 2, :u), missing] )
-@test all( csol(10:11, 2:3, :u, missingIfNotFound=true) .=== [csol(10, 2, :u) missing; missing missing] )
 end

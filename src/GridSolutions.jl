@@ -60,20 +60,11 @@ TimeSeries(sol::GridSolution) = sol.dqsol
 tspan(sol::GridSolution) = (TimeSeries(sol).t[1], TimeSeries(sol).t[end])
 tspan(sol::GridSolution, tres) = range(TimeSeries(sol).t[1], stop=TimeSeries(sol).t[end], length=tres)
 
-function reportMissing(missingIfNotFound::Bool, sol::GridSolution, n::Number)::Missing
-    if missingIfNotFound
-        return missing
-    else
-        throw(BoundsError(sol, n))
-    end
-end
-
 (sol::GridSolution)(t, ::Colon, sym::Symbol, args...; kwargs...) =
     sol(t, eachindex(Nodes(sol)), sym, args...; kwargs...)
-(sol::GridSolution)(t, n, sym::Symbol, args...; missingIfNotFound::Bool=false) = begin
+(sol::GridSolution)(t, n, sym::Symbol, args...) = begin
     if ~all( 1 .<= n .<= length(Nodes(sol)) )
-        @show missingIfNotFound n
-        reportMissing.(missingIfNotFound, sol, n)
+        throw(BoundsError(sol, n))
     else
         sol(t, n, Val{sym}, args...)
     end
@@ -112,16 +103,16 @@ tslabel(sym, n::AbstractArray, i) = tslabel.(Ref(sym), n, Ref(i))
 tstransform(arr::AbstractArray{T, 1}) where T = arr
 tstransform(arr::AbstractArray{T, 2}) where T = arr'
 
-const PLOT_TTIME_RESOLUTION = 10_000
+const PLOT_TTIME_RESOLUTION = 1_000
 
-@recipe function f(sol::AbstractGridSolution, ::Colon, args...)
-    sol, eachindex(Nodes(sol)), args...
+@recipe function f(sol::AbstractSingleGridSolutions, ::Colon, sym::Symbol, args...)
+    sol, eachindex(Nodes(sol)), sym, args...
 end
-@recipe function f(sol::AbstractGridSolution, n, syms::Tuple, args...)
+@recipe function f(sol::AbstractSingleGridSolutions, n, syms::Tuple, args...)
     map(sym -> (sol, n, sym, args...), syms)
 end
 
-@recipe function f(sol::AbstractGridSolution, n, sym::Symbol, args...; tres = PLOT_TTIME_RESOLUTION)
+@recipe function f(sol::AbstractSingleGridSolutions, n, sym::Symbol, args...; tres = PLOT_TTIME_RESOLUTION)
     if sym == :int
         label --> tslabel(sym, n, args[1])
     else

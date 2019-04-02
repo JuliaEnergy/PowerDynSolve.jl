@@ -21,7 +21,8 @@ function (s::SubSolutionHandler)(::Nothing, args...; missingIfNotFound::Bool=fal
         throw(GridSolutionError("Couldn't find entry in solution for args = $args."))
     end
 end
-(s::SubSolutionHandler)(num, args...; kwargs...) =
+# TODO: add issue to propagate missingIfNotFound to the Single Grid Solutions
+(s::SubSolutionHandler)(num, args...; missingIfNotFound::Bool=false, kwargs...) =
     s.sols[num](args...; kwargs...)
 
 Base.convert(::Type{SubSolutionHandler}, sols::Tuple) = SubSolutionHandler(sols)
