@@ -1,6 +1,7 @@
 begin
     using PowerDynBase
     using PowerDynSolve
+    using RecipesBase
     using Random
     using Test
     @show random_seed = 1234
@@ -24,7 +25,6 @@ let
 end
 
 let
-using RecipesBase
 KW = Dict{Symbol, Any}
 RecipesBase.is_key_supported(::Symbol) = true
 # generate some solution
@@ -34,28 +34,40 @@ grid = GridDynamics(parnodes, LY)
 start = State(grid, rand(SystemSize(grid)))
 p = GridProblem(start, (0.,10.))
 sol = solve(p)
+get_correct_label(n, callargs::Tuple{Symbol}) = PowerDynSolve.tslabel(callargs[1], n)
+get_correct_label(n, callargs::Tuple{Symbol,Integer}) = PowerDynSolve.tslabel(callargs[1], n, callargs[2])
 for callargs in [(:v,), (:φ,), (:p,), (:q,), (:int, 1), (:ω,)]
-    data_list = RecipesBase.apply_recipe(KW(), sol, : , callargs...)
+    # callargs = (:v,) # for dev only
+
+    kws = KW()
+    data_list = RecipesBase.apply_recipe(kws, sol, : , callargs...)
+    @test kws == KW()
     @test length(data_list) == 1
     plotargs = data_list[1].args
     @test length(plotargs) == 2 + length(callargs)
     @test plotargs[1] === sol
     @test plotargs[2] == Base.OneTo(length(parnodes)) # range of all nodes
     @test plotargs[3:end] == callargs
-    data_list = RecipesBase.apply_recipe(KW(), plotargs...)
+
+    data_list = RecipesBase.apply_recipe(kws, plotargs...)
+    @test kws == KW(:tres => PowerDynSolve.PLOT_TTIME_RESOLUTION, :label => get_correct_label(1:length(Nodes(sol)), callargs), :xlabel => "t")
     @test length(data_list) == 1
     plotargs = data_list[1].args
     @test plotargs[1] == tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION)
     @test plotargs[2] == PowerDynSolve.tstransform(sol(tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION), 1:length(parnodes), callargs...))
     @test size(plotargs[2]) == (PowerDynSolve.PLOT_TTIME_RESOLUTION, length(parnodes))
 
-    nodenum = 1
-    data_list = RecipesBase.apply_recipe(KW(), sol, nodenum, callargs...)
-    @test length(data_list) == 1
-    plotargs = data_list[1].args
-    @test plotargs[1] == tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION)
-    plotargs[2]
-    sol(tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION), nodenum, callargs...)
-    @test all(plotargs[2] .≈ sol(tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION), nodenum, callargs...))
+    for nodenum = [1, 2]
+        # nodenum = 1 # for dev only
+        kws = KW()
+        data_list = RecipesBase.apply_recipe(kws, sol, nodenum, callargs...)
+        @test kws == KW(:tres => PowerDynSolve.PLOT_TTIME_RESOLUTION, :label => get_correct_label(nodenum, callargs), :xlabel => "t")
+        @test length(data_list) == 1
+        plotargs = data_list[1].args
+        @test plotargs[1] == tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION)
+        plotargs[2]
+        sol(tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION), nodenum, callargs...)
+        @test all(plotargs[2] .≈ sol(tspan(sol, PowerDynSolve.PLOT_TTIME_RESOLUTION), nodenum, callargs...))
+    end
 end
 end
