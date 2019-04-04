@@ -1,18 +1,19 @@
 
 abstract type AbstractMultipleGridSolutions <: AbstractGridSolution end
 
-struct SubSolutionHandler
-    sols::Tuple{Vararg{AbstractSingleGridSolutions}}
-    SubSolutionHandler(sols) = new(flattenGridSolutions(sols...))
-end
-@inline solutionsOf(ssh::SubSolutionHandler) = ssh.sols
-
 # not performant but easy to write (:
 flattenGridSolutions(sols::Vararg{AbstractSingleGridSolutions}) = sols
 flattenGridSolutions(sol::AbstractSingleGridSolutions, sols::Vararg{AbstractGridSolution}) =
     (sol, flattenGridSolutions(sols...)...)
 flattenGridSolutions(sol::AbstractMultipleGridSolutions, sols::Vararg{AbstractGridSolution}) =
     (solutionsOf(sol)..., flattenGridSolutions(sols...)...)
+
+struct SubSolutionHandler
+    sols::Tuple{Vararg{AbstractSingleGridSolutions}}
+    SubSolutionHandler(sols) = new(flattenGridSolutions(sols...))
+end
+
+@inline solutionsOf(ssh::SubSolutionHandler) = ssh.sols
 
 function (s::SubSolutionHandler)(::Nothing, args...; missingIfNotFound::Bool=false, kwargs...)
     if missingIfNotFound
@@ -23,9 +24,13 @@ function (s::SubSolutionHandler)(::Nothing, args...; missingIfNotFound::Bool=fal
 end
 # TODO: add issue to propagate missingIfNotFound to the Single Grid Solutions
 (s::SubSolutionHandler)(num, args...; missingIfNotFound::Bool=false, kwargs...) =
-    s.sols[num](args...; kwargs...)
+    s[num](args...; kwargs...)
 
-Base.convert(::Type{SubSolutionHandler}, sols::Tuple) = SubSolutionHandler(sols)
+@inline Base.getindex(s::SubSolutionHandler, num) = solutionsOf(s)[num]
+
+@inline Base.convert(::Type{SubSolutionHandler}, sols::Tuple) = SubSolutionHandler(sols)
+@inline Base.iterate(ssh::SubSolutionHandler, args...) = iterate(solutionsOf(ssh), args...)
+@inline Base.length(ssh::SubSolutionHandler) = length(solutionsOf(ssh))
 
 struct CompositeGridSolution <: AbstractMultipleGridSolutions
     ssh::SubSolutionHandler
@@ -65,6 +70,59 @@ end
     subSolutionHandlerOf(csol)(solutionNumber, t, n, args...; kwargs...)
 end
 
+@inline Base.iterate(csol::CompositeGridSolution, args...) = iterate(subSolutionHandlerOf(csol), args...)
+@inline Base.length(csol::CompositeGridSolution) = length(subSolutionHandlerOf(csol))
+
 @inline subSolutionHandlerOf(csol::CompositeGridSolution) = csol.ssh
 @inline solutionsOf(csol::CompositeGridSolution) = csol |> subSolutionHandlerOf |> solutionsOf
 @inline timeSpansOf(csol::CompositeGridSolution) = csol.tSpans
+
+adjustIndex(n, removed::Tuple{}) = n
+function adjustIndex(n, removed::Tuple{Vararg{Integer}})
+    n1 = filter(x -> x ∉ removed, n)
+    n2 = (s -> s - count(s .> removed)).(n1)
+    return n2
+end
+
+insertMissingData(data::AbstractArray, n, removed::Tuple{}) = data
+insertMissingData(data::AbstractArray{T,2}, n::AbstractArray, removed::Tuple{}) where {T<:AbstractFloat} = data
+function insertMissingData(data::AbstractArray{T,2}, n::AbstractArray, removed::Tuple{Vararg{Integer}}) where {T<:AbstractFloat}
+    @show n removed
+    @show data |> size
+    data = convert(Array{Union{T,Missing}}, data)
+    @show len = size(data, 1)
+    for (i, s) in enumerate(n)
+        if s ∈ removed
+            @show s
+            data = hcat(data[:,1:i-1], fill(NaN, len), data[:,i:end])
+        end
+    end
+    @show data |> size
+    @show data |> typeof
+    data
+end
+
+@recipe function f(csol::CompositeGridSolution, n, sym::Symbol, args...; removedNodes = (), tres = PLOT_TTIME_RESOLUTION)
+    if removedNodes == ()
+        removedNodes = Tuple(() for sol in csol)
+    end
+    # ensure the type of removedNodes to be tuples of tuples of integers in order to avoid incomprehensible errors later on
+    removedNodes = removedNodes::Tuple{Vararg{Tuple{Vararg{Integer}}}}
+    if !foldl(==, length.(Nodes.(csol)) .+ length.(removedNodes))
+        throw(PowerDynamicsPlottingError("Please ensure that nodes, that you have removed in one of the sub grids of the `CompositeGridSolution` are mentioned in `removedNodes`."))
+    end
+    adjusted_ns = adjustIndex.(Ref(n), removedNodes)
+    adjusted_ns = adjusted_ns::Tuple
+    data = getPlottingData.(csol, adjusted_ns, Ref(sym), args...; tres = tres)
+    t = vcat(getindex.(data, 1)...)
+    plotDataArray = getindex.(data, 2)
+    plotDataArrayWithMissing = insertMissingData.(
+        plotDataArray,
+        Ref(n),
+        removedNodes
+    )
+    plot_data = vcat(plotDataArrayWithMissing...)
+    label --> tslabel.(sym, n)
+    xlabel --> "t"
+    t, plot_data
+end

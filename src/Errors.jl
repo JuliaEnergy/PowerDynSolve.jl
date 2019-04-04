@@ -7,3 +7,8 @@ using PowerDynBase: PowerDynamicsError
 struct GridSolutionError <: PowerDynamicsError
     msg::String
 end
+
+"Error to be thrown if something goes wrong during when solving a power grid model."
+struct PowerDynamicsPlottingError <: PowerDynamicsError
+    msg::String
+end

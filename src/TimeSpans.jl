@@ -1,4 +1,5 @@
 
+# TODO: use time span for normal GridSolution and solve
 
 abstract type AbstractTimeSpan end
 abstract type AbstractSingleTimeSpan <: AbstractTimeSpan end

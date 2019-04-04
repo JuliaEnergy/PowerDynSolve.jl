@@ -96,9 +96,6 @@ using RecipesBase
 
 "Create the standard variable labels for power grid plots."
 tslabel(sym, node) = "$(sym)$(node)"
-tslabel(sym, n::AbstractArray) = tslabel.(Ref(sym), n)
-tslabel(sym, node, i) = "$(sym)$(node)_$(i)"
-tslabel(sym, n::AbstractArray, i) = tslabel.(Ref(sym), n, Ref(i))
 "Transform the array output from DifferentialEquations.jl correctly to be used in Plots.jl's recipes."
 tstransform(arr::AbstractArray{T, 1}) where T = arr
 tstransform(arr::AbstractArray{T, 2}) where T = arr'
@@ -108,17 +105,19 @@ const PLOT_TTIME_RESOLUTION = 1_000
 @recipe function f(sol::AbstractSingleGridSolutions, ::Colon, sym::Symbol, args...)
     sol, eachindex(Nodes(sol)), sym, args...
 end
-@recipe function f(sol::AbstractSingleGridSolutions, n, syms::Tuple, args...)
-    map(sym -> (sol, n, sym, args...), syms)
+
+function getPlottingData(sol::AbstractSingleGridSolutions, n, sym::Symbol, args...; tres)
+    t = tspan(sol, tres)
+    t, tstransform(sol(t, n, sym, args...))
 end
 
 @recipe function f(sol::AbstractSingleGridSolutions, n, sym::Symbol, args...; tres = PLOT_TTIME_RESOLUTION)
     if sym == :int
-        label --> tslabel(sym, n, args[1])
-    else
-        label --> tslabel(sym, n)
+        throw(PowerDynamicsPlottingError("deprecated usage of `:int` for indexing the internal variables: cannot be used for plotting. Use the symbol representing the internal variables instead, e.g. `:ω` for `SwingEq`."))
     end
+    label --> tslabel.(sym, n)
     xlabel --> "t"
     t = tspan(sol, tres)
     t, tstransform(sol(t, n, sym, args...))
+    getPlottingData(sol, n, sym, args...; tres = tres)
 end
