@@ -54,7 +54,7 @@ corresponding subtype of [`PowerDynBase.GridDynamics`](@ref).
 """
 function GridProblem(g::G, start::AbstractState{G, V, T}, timespan; kwargs...) where {G, V, T}
     @assert g === GridDynamics(start)
-    GridProblem(start, timespan; kwargs...)s
+    GridProblem(start, timespan; kwargs...)
 end
 
 
