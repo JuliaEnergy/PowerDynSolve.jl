@@ -53,9 +53,8 @@ Construct a [`PowerDynSolve.GridProblem`](@ref) from a an initial condition `sta
 corresponding subtype of [`PowerDynBase.GridDynamics`](@ref).
 """
 function GridProblem(g::G, start::AbstractState{G, V, T}, timespan; kwargs...) where {G, V, T}
-    # G is the type of the grid dynamics, the function call already assures
-    # type equality of the grid dynamics
-    GridProblem(start, timespan; kwargs...)
+    @assert g === GridDynamics(start)
+    GridProblem(start, timespan; kwargs...)s
 end
 
 
