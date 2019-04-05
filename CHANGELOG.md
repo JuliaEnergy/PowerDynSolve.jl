@@ -3,6 +3,7 @@
 ## Version 0.6
 
 * ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) [calling solve on a grid and state that do not belong to each other now raises an AssertionError](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/23)
+* ![enhancement](https://img.shields.io/badge/PD-enhancement-%23a2eeef.svg) [added states from grid solution for single time points](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/24)
 
 ## Version 0.5
 

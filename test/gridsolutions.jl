@@ -115,6 +115,12 @@ for t in [ts, 0.1], n in [1:2, :, 1, 2]
     @test sol(t, n, :int, 1) == sol(t, n, :ω)
 end
 @test_nowarn sol(ts, :, :int, [1, 1]) # access the frequencies
+
+# check the extraction of states
+@test_nowarn @test isa(sol(5.), PowerDynBase.AbstractState)
+@test sol(:initial) == start
+@test_nowarn @test isa(sol(:final), PowerDynBase.AbstractState)
+@test_throws MethodError sol(:something_else)
 end
 
 # CompositeGridSolution of 2 GridSolution
