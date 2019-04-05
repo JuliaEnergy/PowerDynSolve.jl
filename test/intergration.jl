@@ -14,6 +14,16 @@ end
 ################################################################################
 
 let
+LY = [1.0im -im; -im im]
+grid1 = GridDynamics([SwingEqLVS(H=1., P=-1, D=1, Ω=50, Γ=20, V=1), SwingEqLVS(H=1., P=-1, D=1, Ω=50, Γ=20, V=1)], LY)
+start1 = State(grid1, rand(SystemSize(grid1)))
+grid2 = GridDynamics([SwingEqLVS(H=1., P=-2, D=1, Ω=50, Γ=20, V=1), SwingEqLVS(H=1., P=-1, D=1, Ω=50, Γ=20, V=1)], LY)
+@test grid1 != grid2
+@test_throws AssertionError GridProblem(grid2, start1, (0.,10.))
+@test_throws AssertionError solve(grid2, start1, (0.,10.))
+end
+
+let
 parnodes = [SwingEqLVS(H=1., P=-1, D=1, Ω=50, Γ=20, V=1), SwingEqLVS(H=1., P=-1, D=1, Ω=50, Γ=20, V=1)]
 LY = [1.0im -im; -im im]
 grid = GridDynamics(parnodes, LY)
