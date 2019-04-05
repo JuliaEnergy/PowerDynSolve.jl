@@ -60,8 +60,15 @@ TimeSeries(sol::GridSolution) = sol.dqsol
 tspan(sol::GridSolution) = (TimeSeries(sol).t[1], TimeSeries(sol).t[end])
 tspan(sol::GridSolution, tres) = range(TimeSeries(sol).t[1], stop=TimeSeries(sol).t[end], length=tres)
 
-(sol::GridSolution)(t, ::Colon, sym::Symbol, args...; kwargs...) =
-    sol(t, eachindex(Nodes(sol)), sym, args...; kwargs...)
+(sol::GridSolution)(sym::Symbol) = sol(Val{sym})
+(sol::GridSolution)(::Type{Val{:initial}}) = sol(tspan(sol)[1])
+(sol::GridSolution)(::Type{Val{:final}}) = sol(tspan(sol)[2])
+(sol::GridSolution)(t::Number) = begin
+    t = convert(Time, t)
+    State(GridDynamics(sol), convert(Array, TimeSeries(sol)(t)), t=t)
+end
+
+(sol::GridSolution)(t, ::Colon, sym::Symbol, args...; kwargs...) = sol(t, eachindex(Nodes(sol)), sym, args...; kwargs...)
 (sol::GridSolution)(t, n, sym::Symbol, args...) = begin
     if ~all( 1 .<= n .<= length(Nodes(sol)) )
         throw(BoundsError(sol, n))
