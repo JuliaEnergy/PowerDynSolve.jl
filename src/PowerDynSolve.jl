@@ -14,13 +14,20 @@ using Parameters: @with_kw
 include("Errors.jl")
 
 # data types
+const Time = Float64 # type fixed to avoid problems with DifferentialEquations.jl
+
+include("TimeSpans.jl")
 include("GridProblems.jl")
 include("GridSolutions.jl")
+include("CompositeGridSolution.jl")
+
 
 # methods
 include("solve.jl")
 
 export solve, operationpoint, GridProblem, tspan, TimeSeries
+export CompositeGridSolution
 export realsolve, complexsolve
+
 
 end # module PowerDynSolve

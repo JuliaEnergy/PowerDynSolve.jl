@@ -3,6 +3,7 @@
 ## Version 0.5
 
 * ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) & ![enhancement](https://img.shields.io/badge/PD-enhancement-%23a2eeef.svg) [fix line coverage and testing output](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/20)
+* ![enhancement](https://img.shields.io/badge/PD-enhancement-%23a2eeef.svg) [adding functionality for combining multiple grid solutions to one composite grid solution](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/21)
 
 ## Version 0.4
 
