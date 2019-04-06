@@ -5,7 +5,7 @@ __precompile__()
 
 module PowerDynSolve
 
-using DifferentialEquations
+using OrdinaryDiffEq
 using PowerDynBase
 using Lazy: @>
 using Parameters: @with_kw
