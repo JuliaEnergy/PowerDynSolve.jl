@@ -87,18 +87,13 @@ end
 insertMissingData(data::AbstractArray, n, removed::Tuple{}) = data
 insertMissingData(data::AbstractArray{T,2}, n::AbstractArray, removed::Tuple{}) where {T<:AbstractFloat} = data
 function insertMissingData(data::AbstractArray{T,2}, n::AbstractArray, removed::Tuple{Vararg{Integer}}) where {T<:AbstractFloat}
-    @show n removed
-    @show data |> size
     data = convert(Array{Union{T,Missing}}, data)
-    @show len = size(data, 1)
     for (i, s) in enumerate(n)
         if s ∈ removed
             @show s
             data = hcat(data[:,1:i-1], fill(NaN, len), data[:,i:end])
         end
     end
-    @show data |> size
-    @show data |> typeof
     data
 end
 
@@ -108,7 +103,7 @@ end
     end
     # ensure the type of removedNodes to be tuples of tuples of integers in order to avoid incomprehensible errors later on
     removedNodes = removedNodes::Tuple{Vararg{Tuple{Vararg{Integer}}}}
-    if !foldl(==, length.(Nodes.(csol)) .+ length.(removedNodes))
+    if length(unique( length.(Nodes.(csol)) .+ length.(removedNodes) )) != 1
         throw(PowerDynamicsPlottingError("Please ensure that nodes, that you have removed in one of the sub grids of the `CompositeGridSolution` are mentioned in `removedNodes`."))
     end
     adjusted_ns = adjustIndex.(Ref(n), removedNodes)

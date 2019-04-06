@@ -94,4 +94,19 @@ rdata = data_list[1]
 @test rdata.args[2][1:PowerDynSolve.PLOT_TTIME_RESOLUTION,[1,3]] == test_plot_args[1:PowerDynSolve.PLOT_TTIME_RESOLUTION,:]
 @test rdata.args[2][(PowerDynSolve.PLOT_TTIME_RESOLUTION+1):end,1:2] == test_plot_args[(PowerDynSolve.PLOT_TTIME_RESOLUTION+1):end,:]
 
+
+var = :v
+nodeNumbers = 1:2
+csol2 = CompositeGridSolution(csol, solve(GridProblem(start, (25., 30.))))
+data_list = RecipesBase.apply_recipe(KW(), csol2, nodeNumbers, var)
+@test length(data_list) == 1
+rdata = data_list[1]
+@test rdata.plotattributes == KW(:tres => PowerDynSolve.PLOT_TTIME_RESOLUTION, :label => PowerDynSolve.tslabel.(var, nodeNumbers), :xlabel => "t", :removedNodes => ())
+# compare whether the plot results of a CompositeGridSolution match the combination
+# of the single grid solutions together
+test_data_list = RecipesBase.apply_recipe.(Ref(KW()), csol2, Ref(nodeNumbers), Ref(var))
+test_tspan = vcat(test_data_list[1][1].args[1], test_data_list[2][1].args[1], test_data_list[3][1].args[1])
+@test rdata.args[1] == test_tspan
+@test rdata.args[2] == vcat(broadcast((sol, t, n) -> PowerDynSolve.tstransform(sol(t, n, var)), csol2, tspan.(csol2, Ref(PowerDynSolve.PLOT_TTIME_RESOLUTION)), Ref(nodeNumbers))...)
+
 end
