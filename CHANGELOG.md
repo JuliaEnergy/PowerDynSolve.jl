@@ -1,5 +1,9 @@
 # PowerDynSolve.jl Changelog
 
+## Version 0.7
+
+*  ![enhancement](https://img.shields.io/badge/PD-enhancement-%23a2eeef.svg) [switching to OrdinaryDiffEq instead of DifferentialEquations in order to remove dependencies](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/25)
+
 ## Version 0.6
 
 * ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) [calling solve on a grid and state that do not belong to each other now raises an AssertionError](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/23)
