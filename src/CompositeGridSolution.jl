@@ -87,7 +87,7 @@ end
 insertMissingData(data::AbstractArray, n, removed::Tuple{}) = data
 insertMissingData(data::AbstractArray{T,2}, n::AbstractArray, removed::Tuple{}) where {T<:AbstractFloat} = data
 function insertMissingData(data::AbstractArray{T,2}, n::AbstractArray, removed::Tuple{Vararg{Integer}}) where {T<:AbstractFloat}
-    data = convert(Array{Union{T,Missing}}, data)
+    len = size(data, 1)
     for (i, s) in enumerate(n)
         if s ∈ removed
             @show s
