@@ -109,8 +109,13 @@ sol = solve(p)
 @test (range(0, stop=10, length=1_000) .≈ tspan(sol, 1_000)) |> all
 ts = tspan(sol, 10_000)
 for t in [ts, 0.1], n in [1:2, :, 1, 2]
-    for syms=[(:u,), (:p,), (:v,), (:int, 1), (:ω,) ]
-        @test_nowarn sol(t, n, syms...)
+    if n == (:)
+        result_size = (2, size(t)...)
+    else
+        result_size = (size(n)..., size(t)...)
+    end
+    for syms=[(:u,), (:i,), (:p,), (:v,), (:int, 1), (:ω,) ]
+        @test size(sol(t, n, syms...)) == result_size
     end
     @test sol(t, n, :int, 1) == sol(t, n, :ω)
 end
