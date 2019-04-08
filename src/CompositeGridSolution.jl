@@ -90,7 +90,6 @@ function insertMissingData(data::AbstractArray{T,2}, n::AbstractArray, removed::
     len = size(data, 1)
     for (i, s) in enumerate(n)
         if s ∈ removed
-            @show s
             data = hcat(data[:,1:i-1], fill(NaN, len), data[:,i:end])
         end
     end

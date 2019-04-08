@@ -89,6 +89,7 @@ end
 (sol::GridSolution)(t, n, ::Type{Val{:v}}) = sol(t, n, :u) .|> abs
 (sol::GridSolution)(t, n, ::Type{Val{:φ}}) = sol(t, n, :u) .|> angle
 (sol::GridSolution)(t, n, ::Type{Val{:i}}) = (AdmittanceLaplacian(sol) * sol(t, :, :u))[n, :]
+(sol::GridSolution)(t::Number, n, ::Type{Val{:i}}) = (AdmittanceLaplacian(sol) * sol(t, :, :u))[n]
 (sol::GridSolution)(t, n, ::Type{Val{:iabs}}) = sol(t, n, :i) .|> abs
 (sol::GridSolution)(t, n, ::Type{Val{:δ}}) = sol(t, n, :i) .|> angle
 (sol::GridSolution)(t, n, ::Type{Val{:s}}) = sol(t, n, :u) .* conj.(sol(t, n, :i))
