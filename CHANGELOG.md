@@ -1,5 +1,9 @@
 # PowerDynSolve.jl Changelog
 
+## Verions 0.7
+
+* ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) [fixed: calling solution for a single time point and a single node returned an array with a single element instead of the actual element](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/26)
+
 ## Version 0.6
 
 * ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) [calling solve on a grid and state that do not belong to each other now raises an AssertionError](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/23)
