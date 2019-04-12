@@ -19,7 +19,7 @@ DifferentialEquations = "^5"
 Julia = "^1.0"
 PowerDynBase = "^0"
 PowerDynOperationPoint = "^0.2"
-DiffEqBase = "=5.5.1"
+DiffEqBase = "=5.5.2"
 
 [extras]
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
