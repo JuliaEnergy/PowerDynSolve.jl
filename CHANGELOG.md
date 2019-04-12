@@ -1,7 +1,8 @@
 # PowerDynSolve.jl Changelog
 
-## Verions 0.7
+## Version 0.7
 
+* ![enhancement](https://img.shields.io/badge/PD-enhancement-%23a2eeef.svg) [switching to OrdinaryDiffEq instead of DifferentialEquations in order to remove dependencies](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/25)
 * ![bugfix](https://img.shields.io/badge/PD-bugfix-%23d73a4a.svg) [fixed: calling solution for a single time point and a single node returned an array with a single element instead of the actual element](https://github.com/JuliaEnergy/PowerDynSolve.jl/pull/26)
 
 ## Version 0.6
