@@ -15,11 +15,11 @@ PowerDynOperationPoint = "95be4243-a2fd-5eef-a7d1-2e97978993e7"
 RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 
 [compat]
+DiffEqBase = "5.6.2"
 DifferentialEquations = "^5"
 Julia = "^1.0"
 PowerDynBase = "^0"
 PowerDynOperationPoint = "^0.2"
-DiffEqBase = "=5.5.2"
 
 [extras]
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
