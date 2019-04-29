@@ -15,9 +15,9 @@ PowerDynOperationPoint = "95be4243-a2fd-5eef-a7d1-2e97978993e7"
 RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 
 [compat]
+julia = "1"
 DiffEqBase = "5.6.2"
 OrdinaryDiffEq = "5"
-Julia = "1"
 PowerDynBase = "1"
 PowerDynOperationPoint = "1"
 
